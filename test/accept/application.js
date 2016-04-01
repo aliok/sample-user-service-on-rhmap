@@ -331,7 +331,9 @@ describe("/api", function () {
     });
 
     describe("PUT /users/:userId", function () {
-        it("should update the complete user resource when validation is successful", function (done) {
+        // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
+        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        it("should update the complete user resource when user exists and validation is successful", function (done) {
             // change lots of stuff
             request(app)
                 .put("/users/tinywolf709")
@@ -385,7 +387,9 @@ describe("/api", function () {
                 .end(done);
         });
 
-        it("should not update user when validation is not successful", function (done) {
+        // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
+        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        it("should not update user when user exists but validation is not successful", function (done) {
             // change lots of stuff
             request(app)
                 .put("/users/tinywolf709")
@@ -417,9 +421,84 @@ describe("/api", function () {
                     }
                 })
                 .expect('Content-Type', /json/)
-                .expect(400, {error: "Missing name."})
+                .expect(400, {error: "Missing name"})
                 .end(done);
         });
+
+        it("should not update user when user doesn't exist", function (done) {
+            // change lots of stuff
+            request(app)
+                .put("/users/iDontExist")
+                .set('Accept', 'application/json')
+                .send({
+                    foo: "bar"
+                })
+                .expect('Content-Type', /json/)
+                .expect(404)
+                .end(done);
+        });
+    });
+
+    describe("PATCH /users/:userId", function () {
+        // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
+        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        it("should patch user when user exists and validation is successful", function (done) {
+            request(app)
+                .patch("/users/tinywolf709")
+                .set('Accept', 'application/json')
+                .send({
+                    "gender": "male",       // changed
+                    "name": {
+                        "last": "woods"      // changed
+                    }
+                })
+                .expect('Content-Type', /json/)
+                .expect(200, {OK: 1})
+                .expect(function(res){
+                    request(app)
+                        .get("/users/tinywolf709")
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(function (res) {
+                            expect(res.body).to.exist;
+                            expect(res.body.username).to.equal("tinywolf709");
+                            expect(res.body.gender).to.equal("male");
+                            expect(res.body.name).to.exist;
+                            expect(res.body.name.last).to.equal("woods");
+                        });
+                })
+                .end(done);
+        });
+        
+        // TODO: a test to verify `patch` doesn't affect other fields
+
+        // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
+        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        it("should not patch user when user exists but validation is not successful", function (done) {
+            request(app)
+                .put("/users/tinywolf709")
+                .set('Accept', 'application/json')
+                .send({
+                    "location": {
+                        "zip": -1
+                    }
+                })
+                .expect('Content-Type', /json/)
+                .expect(400, {error: "Invalid zip"})
+                .end(done);
+        });
+
+        it("should not patch user when user does not exist", function (done) {
+            request(app)
+                .patch("/users/iDontExist")
+                .set('Accept', 'application/json')
+                .send({
+                    foo: "bar"
+                })
+                .expect('Content-Type', /json/)
+                .expect(404)
+                .end(done);
+        })
     });
 
 });

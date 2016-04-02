@@ -80,8 +80,7 @@ describe("/api", function () {
                             expect(res.body.sha1).to.not.exist;
                             expect(res.body.sha256).to.not.exist;
 
-                            var expected = deepClone(dbHelper.sampleUser_A);
-                            expected = _.omit(expected, ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
+                            var expected = omitCriticalData(dbHelper.sampleUser_A);
 
                             expect(res.body).to.deep.equal(expected);
                         })
@@ -132,56 +131,28 @@ describe("/api", function () {
 
     describe("POST /api/users", function () {
         it("should create the user when validation is successful", function (done) {
+            var toBeSaved = omitCriticalData(dbHelper.sampleUser_A);
+
             request(app)
                 .post("/api/users")
                 .set('Accept', 'application/json')
-                .send({
-                    "gender": "female",
-                    "name": {
-                        "title": "miss",
-                        "first": "alison",
-                        "last": "reid"
-                    },
-                    "location": {
-                        "street": "1097 the avenue",
-                        "city": "Newbridge",
-                        "state": "ohio",
-                        "zip": 28782
-                    },
-                    "email": "this_is_a_new_user@example.com",
-                    "username": "this_is_a_new_user",
-                    "password": "rockon",
-                    // Salt and hash(es) are assigned by the backend
-                    // "salt": "lypI10wj",
-                    // "md5": "bbdd6140e188e3bf68ae7ae67345df65",
-                    // "sha1": "4572d25c99aa65bbf0368168f65d9770b7cacfe6",
-                    // "sha256": "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
-                    // Registration time is assigned by the backend
-                    "registered": 1237176893,
-                    "dob": 932871968,
-                    "phone": "031-541-9181",
-                    "cell": "081-647-4650",
-                    "PPS": "3302243T",
-                    "picture": {
-                        "large": "https://randomuser.me/api/portraits/women/60.jpg",
-                        "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
-                        "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-                    }
-                })
+                .send(toBeSaved)
                 .expect('Content-Type', /json/)
                 .expect(200, {OK: 1})
-                .expect(function () {
+                .end(function (err) {
+                    if (err) {
+                        return done(err);
+                    }
                     request(app)
-                        .get("/api/users/this_is_a_new_user")
+                        .get("/api/users/" + dbHelper.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(function (res) {
                             expect(res.body).to.exist;
-                            expect(res.body.username).to.equal("this_is_a_new_user");
-                            expect(res.body.registered).to.be.within(new Date().getTime() - 1000, new Date().getTime() + 1000);
-                        });
-                })
-                .end(done);
+                            expect(res.body).to.deep.equal(toBeSaved);
+                        })
+                        .end(done);
+                });
         });
 
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
@@ -203,94 +174,58 @@ describe("/api", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should update the complete user resource when user exists and validation is successful", function (done) {
-            // change lots of stuff
-            request(app)
-                .put("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .send({
-                    "gender": "male",                    // changed
-                    "name": {
-                        "title": "mr",                   // changed
-                        "first": "jack",                 // changed
-                        "last": "reid"
-                    },
-                    "location": {
-                        "street": "1097 the avenue",
-                        "city": "dallas",                // changed
-                        "state": "texas",                // changed
-                        "zip": 12345                     // changed
-                    },
-                    "email": "jack.reid@example.com",
-                    "username": "tinywolf709",
-                    "password": "rockon",
-                    "dob": 932871968,
-                    "phone": "031-541-9181",
-                    "cell": "081-647-4650",
-                    "PPS": "3302243T",
-                    "picture": {
-                        "large": "https://randomuser.me/api/portraits/women/60.jpg",
-                        "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
-                        "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-                    }
-                })
-                .expect('Content-Type', /json/)
-                .expect(200, {OK: 1})
-                .expect(function () {
+            dbHelper.insertUser(dbHelper.sampleUser_A)
+                .then(function () {
+                    var changedUserData = omitCriticalData(dbHelper.sampleUser_A);
+
+                    changedUserData.name.first = "ali";
+                    changedUserData.location.street = "grand street 123";
+                    changedUserData.picture.large = undefined;
+
+                    // change lots of stuff
                     request(app)
-                        .get("/api/users/tinywolf709")
+                        .put("/api/users/" + dbHelper.sampleUser_A.username)
                         .set('Accept', 'application/json')
+                        .send(changedUserData)
                         .expect('Content-Type', /json/)
-                        .expect(function (res) {
-                            expect(res.body).to.exist;
-                            expect(res.body.username).to.equal("tinywolf709");
-                            expect(res.body.gender).to.equal("male");
-                            expect(res.body.name).to.exist;
-                            expect(res.body.name.title).to.equal("mr");
-                            expect(res.body.name.first).to.equal("jack");
-                            expect(res.body.location).to.exist;
-                            expect(res.body.location.city).to.equal("dallas");
-                            expect(res.body.location.state).to.equal("texas");
-                            expect(res.body.location.zip).to.equal(12345);
+                        .expect(200, {OK: 1})
+                        .end(function (err) {
+                            if (err) {
+                                return done(err);
+                            }
+                            request(app)
+                                .get("/api/users/" + dbHelper.sampleUser_A.username)
+                                .set('Accept', 'application/json')
+                                .expect('Content-Type', /json/)
+                                .expect(function (res) {
+                                    expect(res.body).to.exist;
+                                    expect(res.body.username).to.equal(dbHelper.sampleUser_A.username);
+                                    expect(res.body.name).to.exist;
+                                    expect(res.body.name.first).to.equal("ali");
+                                    expect(res.body.location).to.exist;
+                                    expect(res.body.location.street).to.equal("grand street 123");
+                                    expect(res.body.picture).to.exist;
+                                    expect(res.body.picture.large).to.not.exist;
+                                })
+                                .end(done);
                         });
                 })
-                .end(done);
+                .catch(done);
         });
 
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should not update user when user exists but validation is not successful", function (done) {
-            request(app)
-                .put("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .send({
-                    "gender": "male",
-                    "FOOname": {                         // name is missing now
-                        "title": "mr",
-                        "first": "jack",
-                        "last": "reid"
-                    },
-                    "location": {
-                        "street": "1097 the avenue",
-                        "city": "dallas",
-                        "state": "texas",
-                        "zip": 12345
-                    },
-                    "email": "jack.reid@example.com",
-                    "username": "tinywolf709",
-                    "password": "rockon",
-                    "dob": 932871968,
-                    "phone": "031-541-9181",
-                    "cell": "081-647-4650",
-                    "PPS": "3302243T",
-                    "picture": {
-                        "large": "https://randomuser.me/api/portraits/women/60.jpg",
-                        "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
-                        "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-                    }
-                })
-                .expect('Content-Type', /json/)
-                .expect(400, {error: "Missing name"})
-                .end(done);
+            dbHelper.insertUser(dbHelper.sampleUser_A)
+                .then(function () {
+                    request(app)
+                        .put("/api/users/" + dbHelper.sampleUser_A.username)
+                        .set('Accept', 'application/json')
+                        .send({foo: "bar"})
+                        .expect('Content-Type', /json/)
+                        .expect(400, {error: "Missing name"})
+                        .end(done);
+                });
         });
 
         it("should not update user when user doesn't exist", function (done) {
@@ -479,6 +414,6 @@ function stopServer(done) {
         .catch(done);
 }
 
-function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
+function omitCriticalData(userData) {
+    return _.omit(userData, ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
 }

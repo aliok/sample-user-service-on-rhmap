@@ -225,7 +225,8 @@ describe("/api", function () {
                         .expect('Content-Type', /json/)
                         .expect(400, {error: "Missing name"})
                         .end(done);
-                });
+                })
+                .catch(done);
         });
 
         it("should not update user when user doesn't exist", function (done) {
@@ -245,49 +246,70 @@ describe("/api", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should patch user when user exists and validation is successful", function (done) {
-            request(app)
-                .patch("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .send({
-                    "gender": "male",       // changed
-                    "name": {
-                        "last": "woods"      // changed
-                    }
-                })
-                .expect('Content-Type', /json/)
-                .expect(200, {OK: 1})
-                .expect(function () {
+            dbHelper.insertUser(dbHelper.sampleUser_A)
+                .then(function () {
                     request(app)
-                        .get("/api/users/tinywolf709")
+                        .patch("/api/users/" + dbHelper.sampleUser_A.username)
                         .set('Accept', 'application/json')
+                        .send({
+                            "gender": "male",
+                            "name.last": "woods",
+                            "picture": {}
+                        })
                         .expect('Content-Type', /json/)
-                        .expect(function (res) {
-                            expect(res.body).to.exist;
-                            expect(res.body.username).to.equal("tinywolf709");
-                            expect(res.body.gender).to.equal("male");
-                            expect(res.body.name).to.exist;
-                            expect(res.body.name.last).to.equal("woods");
+                        .expect(200, {OK: 1})
+                        .end(function (err) {
+                            if (err) {
+                                return done(err);
+                            }
+                            request(app)
+                                .get("/api/users/" + dbHelper.sampleUser_A.username)
+                                .set('Accept', 'application/json')
+                                .expect('Content-Type', /json/)
+                                .expect(function (res) {
+                                    expect(res.body).to.exist;
+                                    expect(res.body.username).to.equal(dbHelper.sampleUser_A.username);
+
+                                    // verify things are changed
+                                    expect(res.body.gender).to.equal("male");
+                                    expect(res.body.name).to.exist;
+                                    expect(res.body.name.last).to.equal("woods");
+                                    expect(res.body.picture).to.not.exist;
+
+                                    // verify patch doesn't affect other properties
+
+                                    var expectedWithoutChanged = omitCriticalData(dbHelper.sampleUser_A);
+                                    var retrievedWithoutChanged = omitCriticalData(res.body);
+                                    retrievedWithoutChanged.gender = expectedWithoutChanged.gender = undefined;
+                                    retrievedWithoutChanged.picture = expectedWithoutChanged.picture = undefined;
+                                    retrievedWithoutChanged.name.last = expectedWithoutChanged.name.last = undefined;
+
+                                    expect(expectedWithoutChanged).to.deep.equal(retrievedWithoutChanged);
+                                })
+                                .end(done);
                         });
                 })
-                .end(done);
+                .catch(done);
         });
-
-        // TODO: a test to verify `patch` doesn't affect other fields
 
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should not patch user when user exists but validation is not successful", function (done) {
-            request(app)
-                .put("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .send({
-                    "location": {
-                        "zip": -1
-                    }
+            dbHelper.insertUser(dbHelper.sampleUser_A)
+                .then(function () {
+                    request(app)
+                        .put("/api/users/" + dbHelper.sampleUser_A.username)
+                        .set('Accept', 'application/json')
+                        .send({
+                            "location": {
+                                "zip": -1
+                            }
+                        })
+                        .expect('Content-Type', /json/)
+                        .expect(400, {error: "Invalid zip"})
+                        .end(done);
                 })
-                .expect('Content-Type', /json/)
-                .expect(400, {error: "Invalid zip"})
-                .end(done);
+                .catch(done);
         });
 
         it("should not patch user when user does not exist", function (done) {

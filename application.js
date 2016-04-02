@@ -93,6 +93,12 @@ function createApp() {
 
     app.use('/api', require('./lib/routes.js'));
 
+    // // TODO: not sure about this one. maybe it messes up something in RHMAP?
+    // // register a 404 handler
+    app.use(function (req, res) {
+        res.status(404).json("Sorry cant find that!");
+    });
+
     // Important that this is last!
     app.use(mbaasExpress.errorHandler());
 

@@ -4,8 +4,8 @@ var expect = require('chai').expect;
 
 var dbHelper = require('./db-helper');
 
-var port = "0.0.0.0";
-var host = "9050";
+var host = "0.0.0.0";
+var port = "9050";
 
 var app;
 
@@ -36,7 +36,7 @@ describe("/api", function () {
             dbHelper.insertUsers([dbHelper.sampleUser_A, dbHelper.sampleUser_B])
                 .then(function () {
                     request(app)
-                        .get("/api/users/tinywolf709")
+                        .get("/api/users/" + dbHelper.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200)
@@ -66,7 +66,7 @@ describe("/api", function () {
             dbHelper.insertUser(dbHelper.sampleUser_A)
                 .then(function () {
                     request(app)
-                        .get("/api/users/tinywolf709")
+                        .get("/api/users/" + dbHelper.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200)
@@ -80,7 +80,7 @@ describe("/api", function () {
                             expect(res.body.sha1).to.not.exist;
                             expect(res.body.sha256).to.not.exist;
 
-                            var expected = JSON.parse(JSON.stringify(dbHelper.sampleUser_A));
+                            var expected = deepClone(dbHelper.sampleUser_A);
                             expected = _.omit(expected, ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
 
                             expect(res.body).to.deep.equal(expected);
@@ -93,19 +93,27 @@ describe("/api", function () {
 
     describe("DELETE /api/users/:username", function () {
         it("should delete the user when user exists", function (done) {
-            request(app)
-                .del("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
-                .expect(200, {OK: 1})
-                .expect(function () {
+            dbHelper.insertUser(dbHelper.sampleUser_A)
+                .then(function () {
                     request(app)
-                        .get("/api/users/tinywolf709")
+                        .del("/api/users/" + dbHelper.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
-                        .expect(404);
+                        .expect(200, {OK: 1})
+                        .end(function (err) {
+                            if (err) {
+                                return done(err);
+                            }
+                            request(app)
+                                .get("/api/users/" + dbHelper.sampleUser_A.username)
+                                .set('Accept', 'application/json')
+                                .expect('Content-Type', /json/)
+                                .expect(404)
+                                .end(done);
+                        });
+
                 })
-                .end(done);
+                .catch(done);
         });
 
         it("should return 404 when user does not exist", function (done) {
@@ -115,7 +123,8 @@ describe("/api", function () {
                 .expect('Content-Type', /json/)
                 .expect(404)
                 .expect(function (res) {
-                    expect(res.body).to.not.exist;
+                    expect(res.body).to.exist;
+                    expect(res.body.message).to.equal("No user found");
                 })
                 .end(done);
         });
@@ -468,4 +477,8 @@ function stopServer(done) {
             done();
         })
         .catch(done);
+}
+
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }

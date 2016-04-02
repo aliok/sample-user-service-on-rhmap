@@ -130,10 +130,10 @@ describe("/api", function () {
         });
     });
 
-    describe("POST /users", function () {
+    describe("POST /api/users", function () {
         it("should create the user when validation is successful", function (done) {
             request(app)
-                .post("/users")
+                .post("/api/users")
                 .set('Accept', 'application/json')
                 .send({
                     "gender": "female",
@@ -188,7 +188,7 @@ describe("/api", function () {
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should return an error message when validation fails", function (done) {
             request(app)
-                .post("/users")
+                .post("/api/users")
                 .set('Accept', 'application/json')
                 .send({
                     "foo": "bar"
@@ -368,12 +368,12 @@ describe("/api", function () {
         });
     });
 
-    describe("POST /search/users", function () {
+    describe("POST /api/search/users", function () {
         // NOTE: testing the validity cases of the query is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/search-query-validator.js`
         it("should return error when query is invalid", function (done) {
             request(app)
-                .post("/search/users")
+                .post("/api/search/users")
                 .set('Accept', 'application/json')
                 .send({
                     query: {
@@ -388,7 +388,7 @@ describe("/api", function () {
 
         it("should return error when there are no users matching the query", function (done) {
             request(app)
-                .post("/search/users")
+                .post("/api/search/users")
                 .set('Accept', 'application/json')
                 .send({
                     query: {
@@ -404,7 +404,7 @@ describe("/api", function () {
 
         it("should limit returned results to N", function (done) {
             request(app)
-                .post("/search/users")
+                .post("/api/search/users")
                 .set('Accept', 'application/json')
                 .send({
                     query: {
@@ -425,7 +425,7 @@ describe("/api", function () {
 
         it("should return found users", function (done) {
             request(app)
-                .post("/search/users")
+                .post("/api/search/users")
                 .set('Accept', 'application/json')
                 .send({
                     query: {

@@ -35,7 +35,10 @@ module.exports.start = function (host, port) {
                     return reject(err);
                 }
                 else {
-                    return fulfill(server);
+                    return fulfill({
+                        server: server,
+                        app: app
+                    });
                 }
             });
 

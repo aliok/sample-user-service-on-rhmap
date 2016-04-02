@@ -1,46 +1,13 @@
+var _ = require('underscore');
 var request = require('supertest');
 var expect = require('chai').expect;
 
+var dbHelper = require('./db-helper');
 
 var port = "0.0.0.0";
 var host = "9050";
 
 var app;
-
-// SAMPLE user object
-// var x = {
-//     "user": {
-//         "gender": "female",
-//         "name": {
-//             "title": "miss",
-//             "first": "alison",
-//             "last": "reid"
-//         },
-//         "location": {
-//             "street": "1097 the avenue",
-//             "city": "Newbridge",
-//             "state": "ohio",
-//             "zip": 28782
-//         },
-//         "email": "alison.reid@example.com",
-//         "username": "tinywolf709",
-//         "password": "rockon",
-//         "salt": "lypI10wj",
-//         "md5": "bbdd6140e188e3bf68ae7ae67345df65",
-//         "sha1": "4572d25c99aa65bbf0368168f65d9770b7cacfe6",
-//         "sha256": "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
-//         "registered": 1237176893,
-//         "dob": 932871968,
-//         "phone": "031-541-9181",
-//         "cell": "081-647-4650",
-//         "PPS": "3302243T",
-//         "picture": {
-//             "large": "https://randomuser.me/api/portraits/women/60.jpg",
-//             "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
-//             "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-//         }
-//     }
-// };
 
 /* jshint -W030 */
 describe("/api", function () {
@@ -53,7 +20,9 @@ describe("/api", function () {
     });
 
     beforeEach(function (done) {
-        dropDatabase(done);
+        dbHelper.dropDatabase()
+            .then(done)
+            .catch(done);
     });
 
     it("should return 404 for unknown", function (done) {
@@ -64,16 +33,20 @@ describe("/api", function () {
 
     describe("GET /api/users/:username", function () {
         it("should return the user when user exists", function (done) {
-            request(app)
-                .get("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .expect(function (res) {
-                    expect(res.body).to.exist;
-                    expect(res.body.username).to.equal("tinywolf709");
+            dbHelper.insertUsers([dbHelper.sampleUser_A, dbHelper.sampleUser_B])
+                .then(function () {
+                    request(app)
+                        .get("/api/users/tinywolf709")
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(200)
+                        .expect(function (res) {
+                            expect(res.body).to.exist;
+                            expect(res.body.username).to.equal("tinywolf709");
+                        })
+                        .end(done);
                 })
-                .end(done);
+                .catch(done);
         });
 
         it("should return 404 when user does not exist", function (done) {
@@ -83,54 +56,38 @@ describe("/api", function () {
                 .expect('Content-Type', /json/)
                 .expect(404)
                 .expect(function (res) {
-                    expect(res.body).to.not.exist;
+                    expect(res.body).to.exist;
+                    expect(res.body.message).to.equal("No user found");
                 })
                 .end(done);
         });
 
         it("should return all user info w/o credentials", function (done) {
-            request(app)
-                .get("/api/users/tinywolf709")
-                .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .expect(function (res) {
-                    expect(res.body).to.exist;
-                    // one way of checking it is exclusive check
-                    // not gonna do here as we need to test the content anyway
-                    // expect(res.body.password).to.not.exist;
-                    // expect(res.body.salt).to.not.exist;
-                    // expect(res.body.md5).to.not.exist;
-                    // expect(res.body.sha1).to.not.exist;
-                    // expect(res.body.sha256).to.not.exist;
-                    expect(res.body).to.deepEqual({
-                        "gender": "female",
-                        "name": {
-                            "title": "miss",
-                            "first": "alison",
-                            "last": "reid"
-                        },
-                        "location": {
-                            "street": "1097 the avenue",
-                            "city": "Newbridge",
-                            "state": "ohio",
-                            "zip": 28782
-                        },
-                        "email": "alison.reid@example.com",
-                        "username": "tinywolf709",
-                        "registered": 1237176893,
-                        "dob": 932871968,
-                        "phone": "031-541-9181",
-                        "cell": "081-647-4650",
-                        "PPS": "3302243T",
-                        "picture": {
-                            "large": "https://randomuser.me/api/portraits/women/60.jpg",
-                            "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
-                            "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-                        }
-                    });
+            dbHelper.insertUser(dbHelper.sampleUser_A)
+                .then(function () {
+                    request(app)
+                        .get("/api/users/tinywolf709")
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(200)
+                        .expect(function (res) {
+                            expect(res.body).to.exist;
+                            // one way of checking it is exclusive check
+                            // not gonna do here as we need to test the content anyway
+                            expect(res.body.password).to.not.exist;
+                            expect(res.body.salt).to.not.exist;
+                            expect(res.body.md5).to.not.exist;
+                            expect(res.body.sha1).to.not.exist;
+                            expect(res.body.sha256).to.not.exist;
+
+                            var expected = JSON.parse(JSON.stringify(dbHelper.sampleUser_A));
+                            expected = _.omit(expected, ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
+
+                            expect(res.body).to.deep.equal(expected);
+                        })
+                        .end(done);
                 })
-                .end(done);
+                .catch(done);
         });
     });
 
@@ -355,7 +312,7 @@ describe("/api", function () {
                 })
                 .expect('Content-Type', /json/)
                 .expect(200, {OK: 1})
-                .expect(function (res) {
+                .expect(function () {
                     request(app)
                         .get("/api/users/tinywolf709")
                         .set('Accept', 'application/json')
@@ -399,7 +356,7 @@ describe("/api", function () {
                 .expect('Content-Type', /json/)
                 .expect(404)
                 .end(done);
-        })
+        });
     });
 
     describe("POST /search/users", function () {
@@ -495,39 +452,20 @@ function startServer(done) {
 
     require("../../application")
         .start(host, port)
-        .then(function (_app) {
-            app = _app;
+        .then(function (result) {
+            app = result.app;
+            console.log("Started server for acceptance tests");
             done();
         })
         .catch(done);
 }
 
 function stopServer(done) {
-    require("../../application").stop()
+    require("../../application")
+        .stop()
         .then(function () {
             app = undefined;
             done();
         })
         .catch(done);
-}
-
-/**
- * Drops the MongoDB database.
- * @return {Promise}
- */
-function dropDatabase(done) {
-    // we have to get this fresh
-    // otherwise connection is already closed
-    var mongoose = require("mongoose");
-    mongoose.connection.db.dropDatabase(function (err, result) {
-        if (err) {
-            done(err);
-        }
-        else if (!result) {
-            done(new Error("Drop database call returned " + result));
-        }
-        else {
-            done();
-        }
-    });
 }

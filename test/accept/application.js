@@ -333,9 +333,7 @@ describe("/api", function () {
                 .post("/api/search/users")
                 .set('Accept', 'application/json')
                 .send({
-                    query: {
-                        foo: "bar"
-                    }
+                    foo: "bar"
                 })
                 .expect('Content-Type', /json/)
                 .expect(403, {error: "Invalid search query"})
@@ -343,65 +341,63 @@ describe("/api", function () {
         });
 
 
-        it("should return error when there are no users matching the query", function (done) {
+        it("should return empty when there are no users matching the query", function (done) {
             request(app)
                 .post("/api/search/users")
                 .set('Accept', 'application/json')
                 .send({
-                    query: {
-                        username: "foobar"
-                    }
+                    username: "foobar"
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, {
-                    results: []
-                })
+                .expect(200, [])
                 .end(done);
         });
 
         it("should limit returned results to N", function (done) {
-            request(app)
-                .post("/api/search/users")
-                .set('Accept', 'application/json')
-                .send({
-                    query: {
-                        "eq": {gender: "female"}
-                    }
+            dbHelper.insertUsers(dbHelper.sampleUsers)
+                .then(function () {
+                    request(app)
+                        .post("/api/search/users")
+                        .set('Accept', 'application/json')
+                        .send({
+                            gender: "female"
+                        })
+                        .expect('Content-Type', /json/)
+                        .expect(200)
+                        .expect(function (res) {
+                            expect(res.body).to.exist;
+                            expect(res.body).be.an('array');
+                            expect(res.body).to.have.lengthOf(30);
+                        })
+                        .end(done);
                 })
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .expect(function (res) {
-                    expect(res.body).to.exist;
-                    expect(res.body.results).to.exist;
-                    expect(res.body.results).be.an('array');
-                    expect(res.body.results).to.have.lengthOf(10);
-                })
-                .end(done);
+                .catch(done);
         });
 
 
         it("should return found users", function (done) {
-            request(app)
-                .post("/api/search/users")
-                .set('Accept', 'application/json')
-                .send({
-                    query: {
-                        gender: "female",
-                        name: {
-                            first: "alison"
-                        }
-                    }
+            dbHelper.insertUsers(dbHelper.sampleUsers)
+                .then(function () {
+                    request(app)
+                        .post("/api/search/users")
+                        .set('Accept', 'application/json')
+                        .send({
+                            "gender": "female",
+                            "name.first": "alison",
+                            "name.title": "miss"
+                        })
+                        .expect('Content-Type', /json/)
+                        .expect(200)
+                        .expect(function (res) {
+                            expect(res.body).to.exist;
+                            expect(res.body).be.an('array');
+                            expect(res.body).to.have.lengthOf(2);
+                            expect(res.body[0].username).to.equal("tinywolf709");
+                            expect(res.body[1].username).to.equal("bluesnake225");
+                        })
+                        .end(done);
                 })
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .expect(function (res) {
-                    expect(res.body).to.exist;
-                    expect(res.body.results).to.exist;
-                    expect(res.body.results).be.an('array');
-                    expect(res.body.results).to.have.lengthOf(1);
-                    expect(res.body.results[0].username).to.equal("tinywolf709");
-                })
-                .end(done);
+                .catch(done);
         });
 
     });
@@ -437,5 +433,9 @@ function stopServer(done) {
 }
 
 function omitCriticalData(userData) {
-    return _.omit(userData, ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
+    return _.omit(deepClone(userData), ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
+}
+
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }

@@ -9,4 +9,8 @@ application
     .start(host, port)
     .then(function () {
         winston.info("App started at: " + new Date() + " on port: " + port);
+    })
+    .catch(function (err) {
+        winston.error(err);
+        process.exit(0);
     });

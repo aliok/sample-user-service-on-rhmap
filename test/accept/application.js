@@ -52,6 +52,10 @@ describe("/api", function () {
         stopServer(done);
     });
 
+    beforeEach(function (done) {
+        dropDatabase(done);
+    });
+
     it("should return 404 for unknown", function (done) {
         request(app)
             .get("/something")
@@ -443,7 +447,7 @@ describe("/api", function () {
                 })
                 .expect('Content-Type', /json/)
                 .expect(200)
-                .expect(function(res){
+                .expect(function (res) {
                     expect(res.body).to.exist;
                     expect(res.body.results).to.exist;
                     expect(res.body.results).be.an('array');
@@ -460,14 +464,14 @@ describe("/api", function () {
                 .send({
                     query: {
                         gender: "female",
-                        name:{
-                            first:"alison"
+                        name: {
+                            first: "alison"
                         }
                     }
                 })
                 .expect('Content-Type', /json/)
                 .expect(200)
-                .expect(function(res){
+                .expect(function (res) {
                     expect(res.body).to.exist;
                     expect(res.body.results).to.exist;
                     expect(res.body.results).be.an('array');
@@ -483,6 +487,12 @@ describe("/api", function () {
 /* jshint +W030 */
 
 function startServer(done) {
+    process.env.MONGODB_SERVICE_HOST = "localhost";
+    process.env.MONGODB_USER = "";
+    process.env.MONGODB_PASSWORD = "";
+    process.env.MONGODB_SERVICE_PORT = "";
+    process.env.MONGODB_DATABASE = "user-service-accept-test";
+
     require("../../application")
         .start(host, port)
         .then(function (_app) {
@@ -499,4 +509,25 @@ function stopServer(done) {
             done();
         })
         .catch(done);
+}
+
+/**
+ * Drops the MongoDB database.
+ * @return {Promise}
+ */
+function dropDatabase(done) {
+    // we have to get this fresh
+    // otherwise connection is already closed
+    var mongoose = require("mongoose");
+    mongoose.connection.db.dropDatabase(function (err, result) {
+        if (err) {
+            done(err);
+        }
+        else if (!result) {
+            done(new Error("Drop database call returned " + result));
+        }
+        else {
+            done();
+        }
+    });
 }

@@ -20,6 +20,8 @@
     "cors": "^2.7.1",
     "express": "~4.13.4",
     "fh-mbaas-api": "~5.7.12",
+    "mongodb-uri": "^0.9.7",
+    "mongoose": "^4.4.10",
     "morgan": "~1.7.0",
     "winston": "~2.2.0"
   },

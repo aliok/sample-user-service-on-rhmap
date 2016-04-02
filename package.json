@@ -1,0 +1,32 @@
+{
+  "name": "sample-user-service-on-rhmap",
+  "version": "1.0.0",
+  "description": "A sample MBaaS service on RHMAP",
+  "author": "Ali Ok",
+  "license": "MIT",
+  "engines": {
+    "node": "0.10",
+    "npm": "1.4"
+  },
+  "main": "server.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test/*.js",
+    "lint": "./node_modules/.bin/jshint .",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bluebird": "~3.3.4",
+    "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
+    "express": "~4.13.4",
+    "fh-mbaas-api": "~5.7.12",
+    "morgan": "~1.7.0",
+    "winston": "~2.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "jshint": "^2.9.1",
+    "mocha": "^2.4.5",
+    "supertest": "^1.2.0"
+  }
+}

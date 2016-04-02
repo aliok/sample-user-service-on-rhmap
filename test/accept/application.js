@@ -58,10 +58,10 @@ describe("/api", function () {
             .expect(404, done);
     });
 
-    describe("GET /users/:username", function () {
+    describe("GET /api/users/:username", function () {
         it("should return the user when user exists", function (done) {
             request(app)
-                .get("/users/tinywolf709")
+                .get("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -74,7 +74,7 @@ describe("/api", function () {
 
         it("should return 404 when user does not exist", function (done) {
             request(app)
-                .get("/users/doesntExist")
+                .get("/api/users/doesntExist")
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(404)
@@ -86,7 +86,7 @@ describe("/api", function () {
 
         it("should return all user info w/o credentials", function (done) {
             request(app)
-                .get("/users/tinywolf709")
+                .get("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -130,16 +130,16 @@ describe("/api", function () {
         });
     });
 
-    describe("DELETE /users/:username", function () {
+    describe("DELETE /api/users/:username", function () {
         it("should delete the user when user exists", function (done) {
             request(app)
-                .del("/users/tinywolf709")
+                .del("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200, {OK: 1})
                 .expect(function () {
                     request(app)
-                        .get("/users/tinywolf709")
+                        .get("/api/users/tinywolf709")
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(404);
@@ -149,7 +149,7 @@ describe("/api", function () {
 
         it("should return 404 when user does not exist", function (done) {
             request(app)
-                .del("/users/doesntExist")
+                .del("/api/users/doesntExist")
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(404)
@@ -202,7 +202,7 @@ describe("/api", function () {
                 .expect(200, {OK: 1})
                 .expect(function () {
                     request(app)
-                        .get("/users/this_is_a_new_user")
+                        .get("/api/users/this_is_a_new_user")
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(function (res) {
@@ -229,13 +229,13 @@ describe("/api", function () {
         });
     });
 
-    describe("PUT /users/:userId", function () {
+    describe("PUT /api/users/:userId", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should update the complete user resource when user exists and validation is successful", function (done) {
             // change lots of stuff
             request(app)
-                .put("/users/tinywolf709")
+                .put("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .send({
                     "gender": "male",                    // changed
@@ -267,7 +267,7 @@ describe("/api", function () {
                 .expect(200, {OK: 1})
                 .expect(function () {
                     request(app)
-                        .get("/users/tinywolf709")
+                        .get("/api/users/tinywolf709")
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(function (res) {
@@ -290,7 +290,7 @@ describe("/api", function () {
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should not update user when user exists but validation is not successful", function (done) {
             request(app)
-                .put("/users/tinywolf709")
+                .put("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .send({
                     "gender": "male",
@@ -325,7 +325,7 @@ describe("/api", function () {
 
         it("should not update user when user doesn't exist", function (done) {
             request(app)
-                .put("/users/iDontExist")
+                .put("/api/users/iDontExist")
                 .set('Accept', 'application/json')
                 .send({
                     foo: "bar"
@@ -336,12 +336,12 @@ describe("/api", function () {
         });
     });
 
-    describe("PATCH /users/:userId", function () {
+    describe("PATCH /api/users/:userId", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should patch user when user exists and validation is successful", function (done) {
             request(app)
-                .patch("/users/tinywolf709")
+                .patch("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .send({
                     "gender": "male",       // changed
@@ -353,7 +353,7 @@ describe("/api", function () {
                 .expect(200, {OK: 1})
                 .expect(function (res) {
                     request(app)
-                        .get("/users/tinywolf709")
+                        .get("/api/users/tinywolf709")
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(function (res) {
@@ -373,7 +373,7 @@ describe("/api", function () {
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should not patch user when user exists but validation is not successful", function (done) {
             request(app)
-                .put("/users/tinywolf709")
+                .put("/api/users/tinywolf709")
                 .set('Accept', 'application/json')
                 .send({
                     "location": {
@@ -387,7 +387,7 @@ describe("/api", function () {
 
         it("should not patch user when user does not exist", function (done) {
             request(app)
-                .patch("/users/iDontExist")
+                .patch("/api/users/iDontExist")
                 .set('Accept', 'application/json')
                 .send({
                     foo: "bar"

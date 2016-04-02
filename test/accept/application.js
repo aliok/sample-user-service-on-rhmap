@@ -42,6 +42,7 @@ var app;
 //     }
 // };
 
+/* jshint -W030 */
 describe("/api", function () {
     before(function (done) {
         startServer(done);
@@ -479,6 +480,7 @@ describe("/api", function () {
     });
 
 });
+/* jshint +W030 */
 
 function startServer(done) {
     require("../../application")

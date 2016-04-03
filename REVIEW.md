@@ -99,3 +99,8 @@ Open `./.coverage-report/lcov-report/index.html`.
 
 Open `./.code-analysis/index.html`
 
+### JSDoc
+
+    npm run generate-jsdoc
+
+Open `./.jsdoc/sample-user-service-on-rhmap/X.Y.Z/index.html`.

@@ -8,16 +8,55 @@ var sampleUsers = _.map(sampleUsersJSON.results, function (item) {
     return item.user;
 });
 
+/**
+ * Provides a helpers to prepare acceptance test cases.
+ *
+ * Methods in here don't use Mongoose. They use MongoDB native driver
+ * directly to be able to prepare test data w/o validation.
+ *
+ * @module test/accept/db-helper
+ */
 module.exports = {
+    /**
+     * All sample users from `sample-data/user.json` file.
+     */
     sampleUsers: sampleUsers,
+
+    /**
+     * One sample user.
+     */
     sampleUser_A: sampleUsers[0],
+
+    /**
+     * Another sample user.
+     */
     sampleUser_B: sampleUsers[1],
+
+    /**
+     * Inserts given user to DB collection.
+     * @method
+     * @param user
+     * @return {Promise<User[]>} - resolves to inserted document wrapped in an array
+     */
     insertUser: insertUser,
+
+    /**
+     * Inserts given users to DB collection.
+     * @method
+     * @param {Object[]} - users
+     * @return {Promise<User[]>} - resolves to inserted documents
+     */
     insertUsers: insertUsers,
+
+    /**
+     * Drops database so that we have a clean state.
+     * @method
+     * @return {Promise} - resolves to undefined
+     */
     dropDatabase: dropDatabase
 };
 
-function insertUser(user, done) {
+function insertUser(user) {
     return new Promise(function (fulfill, reject) {
         assert(user);
         assert(!_.isArray(user));

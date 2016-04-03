@@ -2,9 +2,10 @@
 .idea/
 
 # Node
-node_modules
+node_modules/
 npm-debug.log
 
-# Plato and Istanbul
-.code-analysis
-.coverage-report
+# Plato, Istanbul, JSDoc
+.code-analysis/
+.coverage-report/
+.jsdoc/

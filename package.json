@@ -16,7 +16,8 @@
         "lint": "./node_modules/.bin/jshint .",
         "coverage": "npm run clear-coverage-report && istanbul cover ./node_modules/.bin/_mocha -- --recursive test/ && echo 'Coverage report available at ./.coverage-report/lcov-report/index.html'",
         "clear-coverage-report": "rm -rf ./.coverage-report",
-        "code-analysis": "rm -rf ./.code-analysis && ./node_modules/.bin/plato --recurse --dir ./.code-analysis lib *.js"
+        "code-analysis": "rm -rf ./.code-analysis && ./node_modules/.bin/plato --recurse --dir ./.code-analysis lib *.js",
+        "generate-jsdoc": "rm -Rf ./.jsdoc && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
     },
     "dependencies": {
         "bluebird": "~3.3.4",
@@ -33,6 +34,7 @@
     "devDependencies": {
         "chai": "^3.5.0",
         "istanbul": "^0.4.2",
+        "jsdoc": "^3.4.0",
         "jshint": "^2.9.1",
         "mocha": "^2.4.5",
         "plato": "^1.5.0",

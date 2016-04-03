@@ -8,7 +8,6 @@ var database = require('./lib/database');
 module.exports = {};
 
 // If the Node process ends, close the Mongoose connection
-//noinspection ES6ModulesDependencies
 process
     .on("SIGINT", gracefulExit)
     .on("SIGTERM", gracefulExit);
@@ -93,8 +92,8 @@ function createApp() {
 
     app.use('/api', require('./lib/routes.js'));
 
-    // // TODO: not sure about this one. maybe it messes up something in RHMAP?
-    // // register a 404 handler
+    // TODO: not sure about this one. maybe it messes up something in RHMAP?
+    // register a 404 handler
     app.use(function (req, res) {
         res.status(404).json("Sorry cant find that!");
     });

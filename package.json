@@ -1,50 +1,52 @@
 {
-    "name": "sample-user-service-on-rhmap",
-    "version": "1.0.0",
-    "description": "A sample MBaaS service on RHMAP",
-    "author": "Ali Ok",
-    "license": "MIT",
-    "engines": {
-        "node": "0.10",
-        "npm": "1.4"
-    },
-    "main": "server.js",
-    "scripts": {
-        "start": "node server.js",
-        "start-local": "MONGODB_SERVICE_HOST=localhost MONGODB_DATABASE=user-service node server.js",
-        "test": "npm run lint && npm run test-accept && npm run test-unit",
-        "test-accept": "./node_modules/.bin/mocha --recursive test/accept/",
-        "test-unit": "./node_modules/.bin/mocha --recursive test/unit/",
-        "lint": "./node_modules/.bin/jshint .",
-        "coverage": "npm run clear-coverage-report && npm run coverage-accept && npm run coverage-unit && npm run coverage-combine && echo 'Coverage report available at ./.coverage-report/lcov-report/index.html'",
-        "coverage-accept": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test/accept && cp ./.coverage-report/coverage.json ./.coverage-report/coverage-accept.json",
-        "coverage-unit": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test/unit && cp ./.coverage-report/coverage.json ./.coverage-report/coverage-unit.json",
-        "coverage-combine": "./node_modules/.bin/istanbul-combine -d ./.coverage-report -p summary -r lcov -r html ./.coverage-report/coverage-accept.json ./.coverage-report/coverage-unit.json",
-        "clear-coverage-report": "rm -rf ./.coverage-report",
-        "code-analysis": "rm -rf ./.code-analysis && ./node_modules/.bin/plato --recurse --dir ./.code-analysis lib *.js",
-        "generate-jsdoc": "rm -Rf ./.jsdoc && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
-    },
-    "dependencies": {
-        "bluebird": "~3.3.4",
-        "body-parser": "^1.15.0",
-        "cors": "^2.7.1",
-        "express": "~4.13.4",
-        "fh-mbaas-api": "~5.7.12",
-        "mongodb-uri": "^0.9.7",
-        "mongoose": "^4.4.10",
-        "morgan": "~1.7.0",
-        "underscore": "^1.8.3",
-        "winston": "~2.2.0"
-    },
-    "devDependencies": {
-        "chai": "^3.5.0",
-        "chai-as-promised": "^5.3.0",
-        "istanbul": "^0.4.2",
-        "istanbul-combine": "^0.3.0",
-        "jsdoc": "^3.4.0",
-        "jshint": "^2.9.1",
-        "mocha": "^2.4.5",
-        "plato": "^1.5.0",
-        "supertest": "^1.2.0"
-    }
+  "name": "sample-user-service-on-rhmap",
+  "version": "1.0.0",
+  "description": "A sample MBaaS service on RHMAP",
+  "author": "Ali Ok",
+  "license": "MIT",
+  "engines": {
+    "node": "0.10",
+    "npm": "1.4"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start-local": "MONGODB_SERVICE_HOST=localhost MONGODB_DATABASE=user-service node server.js",
+    "test": "npm run lint && npm run test-accept && npm run test-unit",
+    "test-accept": "./node_modules/.bin/mocha --recursive test/accept/",
+    "test-unit": "./node_modules/.bin/mocha --recursive test/unit/",
+    "lint": "./node_modules/.bin/jshint .",
+    "coverage": "npm run clear-coverage-report && npm run coverage-accept && npm run coverage-unit && npm run coverage-combine && echo 'Coverage report available at ./.coverage-report/lcov-report/index.html'",
+    "coverage-accept": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test/accept && cp ./.coverage-report/coverage.json ./.coverage-report/coverage-accept.json",
+    "coverage-unit": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test/unit && cp ./.coverage-report/coverage.json ./.coverage-report/coverage-unit.json",
+    "coverage-combine": "./node_modules/.bin/istanbul-combine -d ./.coverage-report -p summary -r lcov -r html ./.coverage-report/coverage-accept.json ./.coverage-report/coverage-unit.json",
+    "clear-coverage-report": "rm -rf ./.coverage-report",
+    "code-analysis": "rm -rf ./.code-analysis && ./node_modules/.bin/plato --recurse --dir ./.code-analysis lib *.js",
+    "generate-jsdoc": "rm -Rf ./.jsdoc && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
+  },
+  "dependencies": {
+    "bluebird": "~3.3.4",
+    "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
+    "express": "~4.13.4",
+    "fh-mbaas-api": "~5.7.12",
+    "mongodb-uri": "^0.9.7",
+    "mongoose": "^4.4.10",
+    "morgan": "~1.7.0",
+    "underscore": "^1.8.3",
+    "winston": "~2.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "istanbul": "^0.4.2",
+    "istanbul-combine": "^0.3.0",
+    "jsdoc": "^3.4.0",
+    "jshint": "^2.9.1",
+    "mocha": "^2.4.5",
+    "plato": "^1.5.0",
+    "proxyquire": "^1.7.4",
+    "sinon": "^1.17.3",
+    "supertest": "^1.2.0"
+  }
 }

@@ -155,6 +155,7 @@ describe("/api", function () {
                 });
         });
 
+        // TODO: review notes like these
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in `test/unit/lib/user-validator.js`
         it("should return an error message when validation fails", function (done) {
@@ -165,7 +166,10 @@ describe("/api", function () {
                     "foo": "bar"
                 })
                 .expect('Content-Type', /json/)
-                .expect(403, {"error": "Missing username"})
+                .expect(400, {
+                    "message": "StrictModeError: Field `foo` is not in schema and strict mode is set to throw.",
+                    "status": 400
+                })
                 .end(done);
         });
     });
@@ -223,7 +227,10 @@ describe("/api", function () {
                         .set('Accept', 'application/json')
                         .send({foo: "bar"})
                         .expect('Content-Type', /json/)
-                        .expect(400, {error: "Missing name"})
+                        .expect(400, {
+                            "message": "StrictModeError: Field `foo` is not in schema and strict mode is set to throw.",
+                            "status": 400
+                        })
                         .end(done);
                 })
                 .catch(done);
@@ -302,11 +309,14 @@ describe("/api", function () {
                         .set('Accept', 'application/json')
                         .send({
                             "location": {
-                                "zip": -1
+                                "zip": "SOMESTRING"
                             }
                         })
                         .expect('Content-Type', /json/)
-                        .expect(400, {error: "Invalid zip"})
+                        .expect(400, {
+                            "message": "CastError: Cast to number failed for value \"SOMESTRING\" at path \"location.zip\"",
+                            "status": 400
+                        })
                         .end(done);
                 })
                 .catch(done);
@@ -316,9 +326,7 @@ describe("/api", function () {
             request(app)
                 .patch("/api/users/iDontExist")
                 .set('Accept', 'application/json')
-                .send({
-                    foo: "bar"
-                })
+                .send(dbHelper.sampleUser_A)
                 .expect('Content-Type', /json/)
                 .expect(404)
                 .end(done);

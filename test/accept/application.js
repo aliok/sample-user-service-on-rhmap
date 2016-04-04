@@ -8,6 +8,13 @@ var port = "9050";
 
 var app;
 
+
+//////////////// READ ME ////////////////////
+// these are acceptance test cases.
+// however, not everything is to be tested here.
+// see unit tests as well.
+/////////////////////////////////////////////
+
 /* jshint -W030 */
 describe("/api", function () {
     before(function (done) {
@@ -131,9 +138,8 @@ describe("/api", function () {
                 });
         });
 
-        // TODO: review notes like these
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
-        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        //       those validation rules are tested in unit tests of the related code.
         it("should return an error message when validation fails", function (done) {
             request(app)
                 .post("/api/users")
@@ -152,7 +158,7 @@ describe("/api", function () {
 
     describe("PUT /api/users/:userId", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
-        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        //       those validation rules are tested in unit tests of the related code.
         it("should update the complete user resource when user exists and validation is successful", function (done) {
             dbHelper.insertUser(dbHelper.sampleUser_A)
                 .then(function () {
@@ -194,7 +200,7 @@ describe("/api", function () {
         });
 
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
-        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        //       those validation rules are tested in unit tests of the related code.
         it("should not update user when user exists but validation is not successful", function (done) {
             dbHelper.insertUser(dbHelper.sampleUser_A)
                 .then(function () {
@@ -227,7 +233,7 @@ describe("/api", function () {
 
     describe("PATCH /api/users/:userId", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
-        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        //       those validation rules are tested in unit tests of the related code.
         it("should patch user when user exists and validation is successful", function (done) {
             dbHelper.insertUser(dbHelper.sampleUser_A)
                 .then(function () {
@@ -276,7 +282,7 @@ describe("/api", function () {
         });
 
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
-        //       those validation rules are tested in `test/unit/lib/user-validator.js`
+        //       those validation rules are tested in unit tests of the related code.
         it("should not patch user when user exists but validation is not successful", function (done) {
             dbHelper.insertUser(dbHelper.sampleUser_A)
                 .then(function () {
@@ -311,7 +317,7 @@ describe("/api", function () {
 
     describe("POST /api/search/users", function () {
         // NOTE: testing the validity cases of the query is unnecessary here in acceptance tests.
-        //       those validation rules are tested in `test/unit/lib/search-query-validator.js`
+        //       those validation rules are tested in unit tests of the related code.
         it("should return error when query is invalid", function (done) {
             request(app)
                 .post("/api/search/users")

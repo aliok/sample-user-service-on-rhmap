@@ -8,10 +8,6 @@ FORMAT: 1A
 Rest of this file is API blueprint.
 
 
-TODO:
-* Shrinkwrap
-* Clustering
-
 # About this API blueprint on RHMAP
 
 ### I think RHMAP studio doesn't support the parameter feature of API blueprints thus "Try this API live" doesn't work.

@@ -92,7 +92,7 @@ function createApp() {
 
     app.use('/api', require('./lib/routes.js'));
 
-    // TODO: not sure about this one. maybe it messes up something in RHMAP?
+    // not sure about this one. maybe it messes up something when running on RHMAP?
     // register a 404 handler
     app.use(function (req, res) {
         res.status(404).json("Sorry cant find that!");

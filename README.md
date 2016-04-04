@@ -1,5 +1,6 @@
 FORMAT: 1A
 
+[![Build Status](https://travis-ci.org/aliok/sample-user-service-on-rhmap.svg?branch=master)](https://travis-ci.org/aliok/sample-user-service-on-rhmap)
 
 # IMPORTANT
 ### This application is deployed on RHMAP and publicly available at <https://sampleuserserviceodevegtis-aliok.rhcloud.com>

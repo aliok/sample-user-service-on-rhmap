@@ -1,4 +1,5 @@
-# Disclaimer
+Disclaimer
+===========================
 
 This application is implemented for a job application.
 
@@ -7,6 +8,7 @@ It is deployed on RHMAP and publicly available at <https://sampleuserserviceodev
 Give it a try: <https://sampleuserserviceodevegtis-aliok.rhcloud.com/api/users/tinywolf709>
 
 # Notes to reviewer
+===========================
 
 This web application is just a RESTful endpoint for the given dataset.
 
@@ -51,7 +53,18 @@ You may find my _related_ following applications on Github:
   * Almost everything promisified
 
 
-# Local development
+
+Some extras
+==================================================
+
+* Deployed on RHMAP. Give it a try: <https://sampleuserserviceodevegtis-aliok.rhcloud.com/api/users/tinywolf709>
+* API blueprints
+* Travis : [![Build Status](https://travis-ci.org/aliok/sample-user-service-on-rhmap.svg?branch=master)](https://travis-ci.org/aliok/sample-user-service-on-rhmap)
+* Lint: `npm run lint` Code coverage: `npm run coverage`, code analysis: `npm run code-analysis`, JSDoc: `npm run generate-jsdoc`
+
+
+Local development
+===========================================
 
 ### Requirements
 

@@ -38,7 +38,7 @@ describe("/api", function () {
             .expect(404, done);
     });
 
-    describe("POST /api/users", function () {
+    describe("GET /api/users", function () {
         it("should return all users", function (done) {
             sampleData.insertUsers([sampleData.sampleUser_A, sampleData.sampleUser_B])
                 .then(function () {
@@ -49,7 +49,6 @@ describe("/api", function () {
                         .expect('Content-Type', /json/)
                         .expect(200)
                         .expect(function (res) {
-                            console.log(res.body);
                             expect(res.body).to.exist;
                             expect(res.body).be.an('array');
                             expect(res.body).to.have.lengthOf(2);

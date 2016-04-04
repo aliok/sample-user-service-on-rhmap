@@ -38,6 +38,30 @@ describe("/api", function () {
             .expect(404, done);
     });
 
+    describe("POST /api/users", function () {
+        it("should return all users", function (done) {
+            sampleData.insertUsers([sampleData.sampleUser_A, sampleData.sampleUser_B])
+                .then(function () {
+                    request(app)
+                        .get("/api/users")
+                        .set('Accept', 'application/json')
+                        .send("")
+                        .expect('Content-Type', /json/)
+                        .expect(200)
+                        .expect(function (res) {
+                            console.log(res.body);
+                            expect(res.body).to.exist;
+                            expect(res.body).be.an('array');
+                            expect(res.body).to.have.lengthOf(2);
+                            expect(res.body[0].username).to.equal("tinywolf709");
+                            expect(res.body[1].username).to.equal("crazybear293");
+                        })
+                        .end(done);
+                })
+                .catch(done);
+        });
+    });
+
     describe("GET /api/users/:username", function () {
         it("should return the user when user exists", function (done) {
             sampleData.insertUsers([sampleData.sampleUser_A, sampleData.sampleUser_B])

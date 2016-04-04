@@ -14,6 +14,7 @@ describe("mongoose-utils", function () {
 
     beforeEach(function (done) {
         userDao = sinon.mock({
+            getAllUsers: function(){},
             createUser: function(){},
             findOneUser: function(){},
             findUsers: function(){},

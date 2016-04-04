@@ -21,6 +21,78 @@ Provides user services such as search, filtering and persistence.
 
 Users endpoint.
 
+## Get all users [GET]
+
+Get all users. In real world, we'd have pagination.
+
++ Response 200 (application/json)
+    + Body
+        [
+            {
+                "gender": "female",
+                "email": "alison.reid@example.com",
+                "username": "tinywolf709",
+                "password": "rockon",
+                "salt": "lypI10wj",
+                "md5": "bbdd6140e188e3bf68ae7ae67345df65",
+                "sha1": "4572d25c99aa65bbf0368168f65d9770b7cacfe6",
+                "sha256": "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
+                "registered": 1237176893,
+                "dob": 932871968,
+                "phone": "031-541-9181",
+                "cell": "081-647-4650",
+                "PPS": "3302243T",
+                "picture": {
+                    "large": "https://randomuser.me/api/portraits/women/60.jpg",
+                    "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
+                    "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
+                },
+                "location": {
+                    "street": "1097 the avenue",
+                    "city": "Newbridge",
+                    "state": "ohio",
+                    "zip": 28782
+                },
+                "name": {
+                    "title": "miss",
+                    "first": "alison",
+                    "last": "reid"
+                }
+            },
+            {
+                "gender": "female",
+                "email": "allie.willis@example.com",
+                "username": "crazybear293",
+                "password": "3232",
+                "salt": "UVMKO1Tj",
+                "md5": "b7441c556f250fe6ebb3367ba708d4b6",
+                "sha1": "fc79c95d01ca351efdf283331f39f2384db1dd78",
+                "sha256": "999afe92c680c6d74412ff438c8d0901028805caf66aeff536e0eed52e758d55",
+                "registered": 1216643814,
+                "dob": 253903290,
+                "phone": "041-379-5675",
+                "cell": "081-471-3648",
+                "PPS": "9408385T",
+                "picture": {
+                    "large": "https://randomuser.me/api/portraits/women/19.jpg",
+                    "medium": "https://randomuser.me/api/portraits/med/women/19.jpg",
+                    "thumbnail": "https://randomuser.me/api/portraits/thumb/women/19.jpg"
+                },
+                "location": {
+                    "street": "7135 the crescent",
+                    "city": "Leixlip",
+                    "state": "colorado",
+                    "zip": 37191
+                },
+                "name": {
+                    "title": "miss",
+                    "first": "allie",
+                    "last": "willis"
+                }
+            }
+        ]
+
+
 ## Create a new user [POST]
 
 Create a new user.

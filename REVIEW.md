@@ -12,11 +12,13 @@ Give it a try: <https://sampleuserserviceodevegtis-aliok.rhcloud.com/api/users/t
 
 This web application is just a RESTful endpoint for the given dataset.
 
-Following is a list of things that don't exist because of very limited time I had:
+Following is a list of things that don't exist because of very limited time I had.
 
-* Very limited business logic. Server just takes what client sends. It does some validation
-  like checking uniqueness of username but it it doesn't do many things that a production
-  application would do:
+### Room for improvement
+
+* Business logic. Server just takes what client sends. It does some validation
+  like checking uniqueness of username, type checking for zip code etc. but it
+  it doesn't do many things that a production application would do:
   * Server doesn't set `registered` timestamp to user document with the time of insertion.
     It just passes the value received from client.
   * Server doesn't generate `salt`, `md5`, `sha1` and `sha256`. It just passes the values received
@@ -29,6 +31,8 @@ Following is a list of things that don't exist because of very limited time I ha
 * There is no clustering.
 
 * There is no MongoDB replication/sharding etc.
+
+* There is no pagination support in `/api/users` and `/api/search/users` calls.
 
 
 I am perfectly capable of doing all of the things above.

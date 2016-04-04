@@ -2,6 +2,10 @@
 
 This application is implemented for a job application.
 
+It is deployed on RHMAP and publicly available at <https://sampleuserserviceodevegtis-aliok.rhcloud.com>
+
+Give it a try: <https://sampleuserserviceodevegtis-aliok.rhcloud.com/api/users/tinywolf709>
+
 # Notes to reviewer
 
 This web application is just a RESTful endpoint for the given dataset.

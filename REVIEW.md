@@ -12,11 +12,28 @@ Give it a try: <https://sampleuserserviceodevegtis-aliok.rhcloud.com/api/users/t
 
 This web application is just a RESTful endpoint for the given dataset.
 
+Supported operations are: get all, get single, find by query, create, delete single, update single, patch single.
+
+`server.js` is the entrypoint. `lib/routes.js` defines the routes.
+`lib/user-api.js` responds to requests.
+
+### Highlights:
+
+* Stack: Express + Mongoose + Promises
+* Things are implemented as nice promises.
+* No hacks/workarounds.
+* Runs on RHMAP.
+* Well tested (acceptance test and unit tests).
+* Well documented (JSDocs for almost everything, inline docs for complex things).
+* Tests are promisified as well. They don't look like ugly callback hells.
+
+
+
 Following is a list of things that don't exist because of very limited time I had.
 
 ### Room for improvement
 
-* Business logic. Server just takes what client sends. It does some validation
+* Business logic is limited. Server just takes what client sends. It does some validation
   like checking uniqueness of username, type checking for zip code etc. but it
   it doesn't do many things that a production application would do:
   * Server doesn't set `registered` timestamp to user document with the time of insertion.
@@ -33,6 +50,8 @@ Following is a list of things that don't exist because of very limited time I ha
 * There is no MongoDB replication/sharding etc.
 
 * There is no pagination support in `/api/users` and `/api/search/users` calls.
+
+* Hypermedia support would be nice.
 
 
 I am perfectly capable of doing all of the things above.
@@ -130,7 +149,7 @@ Open `./.jsdoc/sample-user-service-on-rhmap/X.Y.Z/index.html`.
 # Data import on OpenShift/RHMAP
 
 
-I have the data with a little bit of processing stored on [this Gist](https://gist.github.com/aliok/8fa38eb2e26cc59af08006a359239f11/).
+I have the data with a little bit of processing stored in [this Gist](https://gist.github.com/aliok/8fa38eb2e26cc59af08006a359239f11/).
 
 2 approaches to import data:
 

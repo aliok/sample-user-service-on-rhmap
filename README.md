@@ -10,9 +10,7 @@ Rest of this file is API blueprint.
 
 TODO:
 * Shrinkwrap
-* JSHint remove unnecessary rules
 * Clustering
-* Travis
 
 # About this API blueprint on RHMAP
 

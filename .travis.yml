@@ -4,8 +4,6 @@ node_js:
 sudo: false
 services:
   - mongodb
-env:
-  - MONGODB_SERVICE_HOST="localhost" MONGODB_DATABASE="user-service-accept-test"
 before_install:
   - npm install -g npm@1.4.28
   - npm install -g istanbul@0.4.2

@@ -104,3 +104,20 @@ Open `./.code-analysis/index.html`
     npm run generate-jsdoc
 
 Open `./.jsdoc/sample-user-service-on-rhmap/X.Y.Z/index.html`.
+
+
+# Data import on OpenShift/RHMAP
+
+
+I have the data with a little bit of processing stored on [this Gist](https://gist.github.com/aliok/8fa38eb2e26cc59af08006a359239f11/).
+
+2 approaches to import data:
+
+1. SSH into the OpenShift machine and import it with with following commands:
+
+
+    wget https://gist.githubusercontent.com/aliok/8fa38eb2e26cc59af08006a359239f11/raw/7388f2a868b1e7eabdcd614bf2c4e17738300826/sampleUserDataForRHMAPTask.json -O /tmp/sampleData.json
+    mongoimport --host ${OPENSHIFT_MONGODB_DB_HOST} --username ${OPENSHIFT_MONGODB_DB_USERNAME} --password ${OPENSHIFT_MONGODB_DB_PASSWORD} --db ${OPENSHIFT_APP_NAME} --collection users --drop --file /tmp/sampleData.json --jsonArray
+
+2. Use RHMAP dataBrowser.
+

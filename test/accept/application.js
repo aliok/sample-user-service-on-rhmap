@@ -340,11 +340,12 @@ describe("/api", function () {
             request(app)
                 .post("/api/search/users")
                 .set('Accept', 'application/json')
-                .send({
-                    foo: "bar"
-                })
+                .send("")
                 .expect('Content-Type', /json/)
-                .expect(403, {error: "Invalid search query"})
+                .expect(400, {
+                    "message": "No query passed",
+                    "status": 400
+                })
                 .end(done);
         });
 

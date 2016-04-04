@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var request = require('supertest');
 var expect = require('chai').expect;
 

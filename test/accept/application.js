@@ -42,7 +42,10 @@ describe("/api", function () {
                         .expect(200)
                         .expect(function (res) {
                             expect(res.body).to.exist;
-                            expect(res.body.username).to.equal("tinywolf709");
+
+                            var expected = deepClone(dbHelper.sampleUser_A);
+
+                            expect(res.body).to.deep.equal(expected);
                         })
                         .end(done);
                 })
@@ -62,32 +65,6 @@ describe("/api", function () {
                 .end(done);
         });
 
-        it("should return all user info w/o credentials", function (done) {
-            dbHelper.insertUser(dbHelper.sampleUser_A)
-                .then(function () {
-                    request(app)
-                        .get("/api/users/" + dbHelper.sampleUser_A.username)
-                        .set('Accept', 'application/json')
-                        .expect('Content-Type', /json/)
-                        .expect(200)
-                        .expect(function (res) {
-                            expect(res.body).to.exist;
-                            // one way of checking it is exclusive check
-                            // not gonna do here as we need to test the content anyway
-                            expect(res.body.password).to.not.exist;
-                            expect(res.body.salt).to.not.exist;
-                            expect(res.body.md5).to.not.exist;
-                            expect(res.body.sha1).to.not.exist;
-                            expect(res.body.sha256).to.not.exist;
-
-                            var expected = omitCriticalData(dbHelper.sampleUser_A);
-
-                            expect(res.body).to.deep.equal(expected);
-                        })
-                        .end(done);
-                })
-                .catch(done);
-        });
     });
 
     describe("DELETE /api/users/:username", function () {
@@ -131,7 +108,7 @@ describe("/api", function () {
 
     describe("POST /api/users", function () {
         it("should create the user when validation is successful", function (done) {
-            var toBeSaved = omitCriticalData(dbHelper.sampleUser_A);
+            var toBeSaved = deepClone(dbHelper.sampleUser_A);
 
             request(app)
                 .post("/api/users")
@@ -180,7 +157,7 @@ describe("/api", function () {
         it("should update the complete user resource when user exists and validation is successful", function (done) {
             dbHelper.insertUser(dbHelper.sampleUser_A)
                 .then(function () {
-                    var changedUserData = omitCriticalData(dbHelper.sampleUser_A);
+                    var changedUserData = deepClone(dbHelper.sampleUser_A);
 
                     changedUserData.name.first = "ali";
                     changedUserData.location.street = "grand street 123";
@@ -285,8 +262,8 @@ describe("/api", function () {
 
                                     // verify patch doesn't affect other properties
 
-                                    var expectedWithoutChanged = omitCriticalData(dbHelper.sampleUser_A);
-                                    var retrievedWithoutChanged = omitCriticalData(res.body);
+                                    var expectedWithoutChanged = deepClone(dbHelper.sampleUser_A);
+                                    var retrievedWithoutChanged = deepClone(res.body);
                                     retrievedWithoutChanged.gender = expectedWithoutChanged.gender = undefined;
                                     retrievedWithoutChanged.picture = expectedWithoutChanged.picture = undefined;
                                     retrievedWithoutChanged.name.last = expectedWithoutChanged.name.last = undefined;
@@ -439,10 +416,6 @@ function stopServer(done) {
             done();
         })
         .catch(done);
-}
-
-function omitCriticalData(userData) {
-    return _.omit(deepClone(userData), ['_id', 'md5', 'sha1', 'sha256', 'salt', 'password']);
 }
 
 function deepClone(obj) {

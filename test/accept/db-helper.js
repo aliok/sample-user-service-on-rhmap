@@ -78,6 +78,14 @@ function insertUsers(users) {
             if (err) {
                 return reject(err);
             }
+
+            // MongoDB driver modifies inserted objects by adding an '_id' field.
+            // having the id in the sample data doesn't make sense in our tests.
+            // remove that field!
+            _.each(users, function(user){
+                delete user._id;
+            });
+
             return fulfill(data);
         });
     });

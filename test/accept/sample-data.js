@@ -14,7 +14,7 @@ var sampleUsers = _.map(sampleUsersJSON.results, function (item) {
  * Methods in here don't use Mongoose. They use MongoDB native driver
  * directly to be able to prepare test data w/o validation.
  *
- * @module test/accept/db-helper
+ * @module test/accept/sample-data
  */
 module.exports = {
     /**
@@ -46,14 +46,7 @@ module.exports = {
      * @param {Object[]} - users
      * @return {Promise<User[]>} - resolves to inserted documents
      */
-    insertUsers: insertUsers,
-
-    /**
-     * Drops database so that we have a clean state.
-     * @method
-     * @return {Promise} - resolves to undefined
-     */
-    dropDatabase: dropDatabase
+    insertUsers: insertUsers
 };
 
 function insertUser(user) {
@@ -90,27 +83,3 @@ function insertUsers(users) {
         });
     });
 }
-
-/**
- * Drops the MongoDB database.
- */
-function dropDatabase() {
-    return new Promise(function (fulfill, reject) {
-        // we have to get this fresh
-        // otherwise connection is already closed
-        var mongoose = require("mongoose");
-        mongoose.connection.db.dropDatabase(function (err, result) {
-            if (err) {
-                reject(err);
-            }
-            else if (!result) {
-                reject(new Error("Drop database call returned " + result));
-            }
-            else {
-                fulfill();
-            }
-        });
-    });
-}
-
-

@@ -1,7 +1,8 @@
 var request = require('supertest');
 var expect = require('chai').expect;
 
-var dbHelper = require('./db-helper');
+var sampleData = require('./sample-data');
+var dbHelper = require('../db-helper');
 
 var host = "0.0.0.0";
 var port = "9050";
@@ -39,17 +40,17 @@ describe("/api", function () {
 
     describe("GET /api/users/:username", function () {
         it("should return the user when user exists", function (done) {
-            dbHelper.insertUsers([dbHelper.sampleUser_A, dbHelper.sampleUser_B])
+            sampleData.insertUsers([sampleData.sampleUser_A, sampleData.sampleUser_B])
                 .then(function () {
                     request(app)
-                        .get("/api/users/" + dbHelper.sampleUser_A.username)
+                        .get("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200)
                         .expect(function (res) {
                             expect(res.body).to.exist;
 
-                            var expected = deepClone(dbHelper.sampleUser_A);
+                            var expected = deepClone(sampleData.sampleUser_A);
 
                             expect(res.body).to.deep.equal(expected);
                         })
@@ -75,10 +76,10 @@ describe("/api", function () {
 
     describe("DELETE /api/users/:username", function () {
         it("should delete the user when user exists", function (done) {
-            dbHelper.insertUser(dbHelper.sampleUser_A)
+            sampleData.insertUser(sampleData.sampleUser_A)
                 .then(function () {
                     request(app)
-                        .del("/api/users/" + dbHelper.sampleUser_A.username)
+                        .del("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200, {OK: 1})
@@ -87,7 +88,7 @@ describe("/api", function () {
                                 return done(err);
                             }
                             request(app)
-                                .get("/api/users/" + dbHelper.sampleUser_A.username)
+                                .get("/api/users/" + sampleData.sampleUser_A.username)
                                 .set('Accept', 'application/json')
                                 .expect('Content-Type', /json/)
                                 .expect(404)
@@ -114,7 +115,7 @@ describe("/api", function () {
 
     describe("POST /api/users", function () {
         it("should create the user when validation is successful", function (done) {
-            var toBeSaved = deepClone(dbHelper.sampleUser_A);
+            var toBeSaved = deepClone(sampleData.sampleUser_A);
 
             request(app)
                 .post("/api/users")
@@ -127,7 +128,7 @@ describe("/api", function () {
                         return done(err);
                     }
                     request(app)
-                        .get("/api/users/" + dbHelper.sampleUser_A.username)
+                        .get("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(function (res) {
@@ -160,9 +161,9 @@ describe("/api", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in unit tests of the related code.
         it("should update the complete user resource when user exists and validation is successful", function (done) {
-            dbHelper.insertUser(dbHelper.sampleUser_A)
+            sampleData.insertUser(sampleData.sampleUser_A)
                 .then(function () {
-                    var changedUserData = deepClone(dbHelper.sampleUser_A);
+                    var changedUserData = deepClone(sampleData.sampleUser_A);
 
                     changedUserData.name.first = "ali";
                     changedUserData.location.street = "grand street 123";
@@ -170,7 +171,7 @@ describe("/api", function () {
 
                     // change lots of stuff
                     request(app)
-                        .put("/api/users/" + dbHelper.sampleUser_A.username)
+                        .put("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .send(changedUserData)
                         .expect('Content-Type', /json/)
@@ -180,12 +181,12 @@ describe("/api", function () {
                                 return done(err);
                             }
                             request(app)
-                                .get("/api/users/" + dbHelper.sampleUser_A.username)
+                                .get("/api/users/" + sampleData.sampleUser_A.username)
                                 .set('Accept', 'application/json')
                                 .expect('Content-Type', /json/)
                                 .expect(function (res) {
                                     expect(res.body).to.exist;
-                                    expect(res.body.username).to.equal(dbHelper.sampleUser_A.username);
+                                    expect(res.body.username).to.equal(sampleData.sampleUser_A.username);
                                     expect(res.body.name).to.exist;
                                     expect(res.body.name.first).to.equal("ali");
                                     expect(res.body.location).to.exist;
@@ -202,10 +203,10 @@ describe("/api", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in unit tests of the related code.
         it("should not update user when user exists but validation is not successful", function (done) {
-            dbHelper.insertUser(dbHelper.sampleUser_A)
+            sampleData.insertUser(sampleData.sampleUser_A)
                 .then(function () {
                     request(app)
-                        .put("/api/users/" + dbHelper.sampleUser_A.username)
+                        .put("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .send({foo: "bar"})
                         .expect('Content-Type', /json/)
@@ -235,10 +236,10 @@ describe("/api", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in unit tests of the related code.
         it("should patch user when user exists and validation is successful", function (done) {
-            dbHelper.insertUser(dbHelper.sampleUser_A)
+            sampleData.insertUser(sampleData.sampleUser_A)
                 .then(function () {
                     request(app)
-                        .patch("/api/users/" + dbHelper.sampleUser_A.username)
+                        .patch("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .send({
                             "gender": "male",
@@ -252,12 +253,12 @@ describe("/api", function () {
                                 return done(err);
                             }
                             request(app)
-                                .get("/api/users/" + dbHelper.sampleUser_A.username)
+                                .get("/api/users/" + sampleData.sampleUser_A.username)
                                 .set('Accept', 'application/json')
                                 .expect('Content-Type', /json/)
                                 .expect(function (res) {
                                     expect(res.body).to.exist;
-                                    expect(res.body.username).to.equal(dbHelper.sampleUser_A.username);
+                                    expect(res.body.username).to.equal(sampleData.sampleUser_A.username);
 
                                     // verify things are changed
                                     expect(res.body.gender).to.equal("male");
@@ -267,7 +268,7 @@ describe("/api", function () {
 
                                     // verify patch doesn't affect other properties
 
-                                    var expectedWithoutChanged = deepClone(dbHelper.sampleUser_A);
+                                    var expectedWithoutChanged = deepClone(sampleData.sampleUser_A);
                                     var retrievedWithoutChanged = deepClone(res.body);
                                     retrievedWithoutChanged.gender = expectedWithoutChanged.gender = undefined;
                                     retrievedWithoutChanged.picture = expectedWithoutChanged.picture = undefined;
@@ -284,10 +285,10 @@ describe("/api", function () {
         // NOTE: testing the validity cases of the user is unnecessary here in acceptance tests.
         //       those validation rules are tested in unit tests of the related code.
         it("should not patch user when user exists but validation is not successful", function (done) {
-            dbHelper.insertUser(dbHelper.sampleUser_A)
+            sampleData.insertUser(sampleData.sampleUser_A)
                 .then(function () {
                     request(app)
-                        .put("/api/users/" + dbHelper.sampleUser_A.username)
+                        .put("/api/users/" + sampleData.sampleUser_A.username)
                         .set('Accept', 'application/json')
                         .send({
                             "location": {
@@ -308,7 +309,7 @@ describe("/api", function () {
             request(app)
                 .patch("/api/users/iDontExist")
                 .set('Accept', 'application/json')
-                .send(dbHelper.sampleUser_A)
+                .send(sampleData.sampleUser_A)
                 .expect('Content-Type', /json/)
                 .expect(404)
                 .end(done);
@@ -345,7 +346,7 @@ describe("/api", function () {
         });
 
         it("should limit returned results to N", function (done) {
-            dbHelper.insertUsers(dbHelper.sampleUsers)
+            sampleData.insertUsers(sampleData.sampleUsers)
                 .then(function () {
                     request(app)
                         .post("/api/search/users")
@@ -367,7 +368,7 @@ describe("/api", function () {
 
 
         it("should return found users", function (done) {
-            dbHelper.insertUsers(dbHelper.sampleUsers)
+            sampleData.insertUsers(sampleData.sampleUsers)
                 .then(function () {
                     request(app)
                         .post("/api/search/users")
